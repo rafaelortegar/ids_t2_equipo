@@ -1,13 +1,15 @@
-# Proyecto Final de la materia de Deep Learning de la Maestría en Ciencia de Datos
+# Segunda Tarea de la materia Introducción a Ciencia de Datos 2020
 
-**Profesor:** Francisco 
+**Profesor:** Liliana Millan
 
 **Integrantes del equipo**
 
 | # | Alumno                           | Clave única |
 |---|-----------------------------------|-------------|
 | 1 | Angel Rafael Ortega Ramírez | 123972      |
-| 2 | Carlos Tabares         | CU      |
+| 2 | Eduardo         | CU      |
+| 3 | Yedam         | CU      |
+| 4 | Santiago         | CU      |
 
 
 
