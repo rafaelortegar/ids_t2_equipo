@@ -237,8 +237,8 @@ def genera_profiling_de_numericos(df,lista_numericas,vars_type):
 def genera_profiling_de_categorias(df, lista_category,vars_type):
     # Obtenemos los estadísticos de la columna si es catagorica
     lista_perfilamiento_categorico = ['tipo','numero de categorias', 'numero de observaciones',
-                                      'observaciones nulas',
-                                    '% observaciones nulas']
+                                      'observaciones nulas','% observaciones nulas', 'valores unicos',
+                                      'moda1/veces/porcentaje','moda2/veces/porcentaje','moda3/veces/porcentaje']
     datos_dataframe_profiling_categoricos = {'metrica':lista_perfilamiento_categorico}
     dataframe_profiling_categoricas = pd.DataFrame(data=datos_dataframe_profiling_categoricos)
     for col in lista_category:
@@ -270,7 +270,30 @@ def genera_profiling_de_categorias(df, lista_category,vars_type):
 
         por_obs_nulas=num_obs_nulas/num_observaciones
 
-        datos_variable = [tipo_dato,num_categorias,num_observaciones,num_obs_nulas,por_obs_nulas]
+        # valor de las categorias
+        valores_unicos = list(df[col].unique())
+
+        # generamos tabla para las modas
+        tabla_importantes = CreaTablaConteoPorcentaje(df,str(col),True)
+        tabla_importantes.columns = ['conteo','porcentaje']
+
+        moda1 = tabla_importantes.index[0]
+        veces1 = tabla_importantes['conteo'][0]
+        porcentaje1 = tabla_importantes['porcentaje'][0]
+        datos_moda1 = [moda1,veces1,porcentaje1]
+
+        moda2 = tabla_importantes.index[1]
+        veces2 = tabla_importantes['conteo'][1]
+        porcentaje2 = tabla_importantes['porcentaje'][1]
+        datos_moda2 = [moda2,veces2,porcentaje2]
+
+        moda3 = tabla_importantes.index[2]
+        veces3 = tabla_importantes['conteo'][2]
+        porcentaje3 = tabla_importantes['porcentaje'][2]
+        datos_moda3 = [moda3,veces3,porcentaje3]
+
+        datos_variable = [tipo_dato,num_categorias,num_observaciones,num_obs_nulas,por_obs_nulas,
+                          valores_unicos,datos_moda1,datos_moda2,datos_moda3]
         dataframe_profiling_categoricas[col]=datos_variable
     return dataframe_profiling_categoricas
 
@@ -504,3 +527,29 @@ def EstandarizaFormato(df):
     df = StringEspacios(df)
 
     return df
+
+
+def CreaTablaConteoPorcentaje(df, nomColumna, booleanNA):
+    """
+    Esta función crea la tabla con información sobre los conteos y el porcentaje al que corresponden del total de los datos.
+
+    ==========
+    * Args:
+      - df: el data frame que contiene los parquets importados.
+      - nomColumna: El nombre de la columna sobre la que se quiere realizar la tabla.
+      - booleanNA: Indicador booleano que indica si se requiere que se muestren los NA's en la tabla.
+    * Return:
+      - Data Frame: entrega el data frame con los la categoría de la columna RESPUESTA modificada.
+    ==========
+    Ejemplo:
+      >>df = CreaTablaConteoPorcentaje(df, 'RESPUESTA', True)
+
+    """
+
+    df_resultado = df[nomColumna].value_counts(dropna=booleanNA)
+    df_resultado = pd.DataFrame(data=df_resultado)
+
+    #obteniendo los porcentajes
+    df_resultado['porcentaje'] = df[nomColumna].value_counts(dropna=booleanNA, normalize=True).mul(100).round(2).astype(str)+'%'
+
+    return df_resultado
