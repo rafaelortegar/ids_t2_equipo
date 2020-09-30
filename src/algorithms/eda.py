@@ -1,9 +1,25 @@
 import re
 import pandas as pd
 import numpy as np
-from pandas_profiling import ProfileReport
 
 def cuenta_tipo_de_dato(df,tipo):
+    """
+    Esta función crea la tabla con información sobre la cantidad de cada tipo de dato encontrado en el csv.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el conteo del tipo de dato.
+         - tipo: El nombre del tipo de dato que estamos buscando.
+    * Return:
+         - Data Frame: entrega el data frame con los la categoría de la columna RESPUESTA modificada.
+    ==========
+    Ejemplo:
+        # Para encontrar el tipo de dato numérico
+         >>conteo_nuericos = cuenta_tipo_de_dato(df, 'numerico')
+
+         # Para encontrar el tipo de dato texto
+          >>conteo_texto = cuenta_tipo_de_dato(df, 'object')
+    """
     vars_type = df.dtypes
     vars_type = pd.DataFrame(vars_type, columns = ['tipo'])
 
@@ -20,6 +36,15 @@ def cuenta_nulos_por_columnas(df):
     """
     Función que realiza una tabla con la cuenta de missing values por columna y obtiene la proporción que estos missing
     values representan del total.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el conteo de los nulos por cada columna.
+    * Return:
+         - Data Frame: entrega el data frame que indica cuantos elementos nulos fueron encontrados en cada columna.
+    ==========
+    Ejemplo:
+         >>faltates_por_columna = cuenta_nulos_por_columnas(df)
     """
     valores_nulos = df.isnull().sum()
     porcentaje_valores_nulos = 100 * df.isnull().sum() / len(df)
@@ -36,6 +61,18 @@ def cuenta_nulos_por_columnas(df):
 
 
 def genera_profiling_general(df):
+    """
+    Función que genera la tabla con un perfilamiento general del data set, sin entrar al detalle por variable.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el perfilamiento general.
+    * Return:
+         - Data Frame: entrega el data frame con un perfilamiento general del data set.
+    ==========
+    Ejemplo:
+         >>perfilamiento_general = genera_profiling_general(df)
+    """
     cuenta_de_variables = len(df.columns)
     cuenta_observaciones = len(df)
     total_celdas = cuenta_de_variables*cuenta_observaciones
@@ -100,6 +137,15 @@ def cuenta_nulos_por_renglones(df):
     """
     Función que cuenta la cantidad de valores nulos por cada renglón, para valorar si es posible o no realizar
     imputaciones o se tendrían que tirar las columnas o renglones correspondientes.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el conteo de nulos por renglon.
+    * Return:
+         - Información del data frame: Imprime información relevante sobre los faltantes en el dataframe.
+    ==========
+    Ejemplo:
+         >>nulos_por_renglon = cuenta_nulos_por_renglones(df)
     """
     df_aux = df.copy()
     valores_nulos_totales = sum(df_aux.apply(lambda x: sum(x.isnull().values), axis=1) > 0)
@@ -112,6 +158,19 @@ def cuenta_nulos_por_renglones(df):
     return valores_nulos_totales
 
 def cuenta_nulos_por_renglones_tabla(df):
+    """
+    Función que cuenta la cantidad de valores nulos por cada renglón y entrega un Data Frame
+    que indica el top 5 de renglones con valores faltantes en el Data set.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el conteo de nulos por renglon.
+    * Return:
+         - Data Frame: Imprime información relevante sobre los faltantes en el dataframe.
+    ==========
+    Ejemplo:
+         >>tabla_nulos_por_renglon = cuenta_nulos_por_renglones_tabla(df)
+    """
     arreglo_nulos=[]
     arreglo_renglones=[]
     for i in range(len(df.index)):
@@ -131,6 +190,29 @@ def cuenta_nulos_por_renglones_tabla(df):
     return tabla_valores_nulos_ordenada_solonulos.head(10)
 
 def genera_profiling_de_numericos(df,lista_numericas,vars_type):
+    """
+    Función que genera un perfilamiento para los datos numéricos.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el perfilamiento para variables numéricas.
+         - lista_numericas: una lista con el nombre de las variables que son de tipo numérico.
+         - vars_type: tabla generada por la función cuenta_tipo_de_dato de este mismo script.
+    * Return:
+         - Data Frame: Data Frame con el perfilamiento para las variables numéricas.
+    ==========
+    Ejemplo:
+        >>vars_type = cuenta_tipo_de_dato(df)
+
+        # Extraemos el nombre de las variables numericas:
+        >>variables_int = vars_type.loc[vars_type["tipo"] == "int64"]
+        >>variables_float = vars_type.loc[vars_type["tipo"] == "float64"]
+        >>variables_numericas = variables_int.append(variables_float, ignore_index=True)
+        >>lista_numericas = list(variables_numericas['variable'])
+
+        # Generamos el perfilamiento para esas variables
+        >>perfilamiento_de_numericas = genera_profiling_de_numericos(df,lista_numericas,vars_type)
+    """
     # Obtenemos los estadísticos de la columna si es numérica
     lista_perfilamiento_numerico = ['tipo','numero de observaciones', 'media', 'desviacion estándar',
                                     'cuartil 25%','cuartil 50%','cuartil 75%','minimo','maximo',
@@ -235,6 +317,27 @@ def genera_profiling_de_numericos(df,lista_numericas,vars_type):
 
 
 def genera_profiling_de_categorias(df, lista_category,vars_type):
+    """
+    Función que genera un perfilamiento para los datos categóricos.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el perfilamiento para variables categóricas.
+         - lista_category: una lista con el nombre de las variables que son de tipo categórico.
+         - vars_type: tabla generada por la función cuenta_tipo_de_dato de este mismo script.
+    * Return:
+         - Data Frame: Data Frame con el perfilamiento para las variables categóricas.
+    ==========
+    Ejemplo:
+        >>vars_type = cuenta_tipo_de_dato(df)
+
+        # Extraemos el nombre de las variables categoricas:
+        >>variables_category = vars_type.loc[vars_type["tipo"] == "category"]
+        >>lista_category = list(variables_category['variable'])
+
+        # Generamos el perfilamiento para esas variables
+        >>profiling_de_categorias = genera_profiling_de_categorias(df,lista_category,vars_type)
+    """
     # Obtenemos los estadísticos de la columna si es catagorica
     lista_perfilamiento_categorico = ['tipo','numero de categorias', 'numero de observaciones',
                                       'observaciones nulas','% observaciones nulas', 'valores unicos',
@@ -299,6 +402,27 @@ def genera_profiling_de_categorias(df, lista_category,vars_type):
 
 
 def genera_profiling_de_texto(df,lista_texto,vars_type):
+    """
+    Función que genera un perfilamiento para los datos de tipo texto.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el perfilamiento para variables de texto.
+         - lista_texto: una lista con el nombre de las variables que son de tipo texto (object).
+         - vars_type: tabla generada por la función cuenta_tipo_de_dato de este mismo script.
+    * Return:
+         - Data Frame: Data Frame con el perfilamiento para las variables categóricas.
+    ==========
+    Ejemplo:
+        >>vars_type = cuenta_tipo_de_dato(df)
+
+        # Extraemos el nombre de las variables de texto:
+        >>variables_texto = vars_type.loc[vars_type["tipo"] == "object"]
+        >>lista_texto = list(variables_texto['variable'])
+
+        # Generamos el perfilamiento para esas variables
+        >>profiling_de_texto = genera_profiling_de_texto(df,lista_texto,vars_type)
+    """
     # Obtenemos los estadísticos de la columna si es catagorica
     lista_perfilamiento_txt = ['tipo','numero de observaciones', 'observaciones unicas', '% observaciones unicas',
                                     'tamano promedio','tamano minmo','tamano maximo']
@@ -347,6 +471,21 @@ def genera_profiling_de_texto(df,lista_texto,vars_type):
 
 
 def genera_profiling_por_variable(df):
+    """
+    Función que genera un perfilamiento para cada tipo de variable en el data frame.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le va a realizar el perfilamiento por variable.
+    * Return:
+         - profiling_numericas: Data Frame con el perfilamiento para las variables numéricas.
+         - profiling_categoricas: Data Frame con el perfilamiento para las variables categóricas
+         - profiling_de_texto: Data Frame con el perfilamiento para las variables de tipo texto
+    ==========
+    Ejemplo:
+        # Generamos el perfilamiento para esas variables
+        >>profiling_numericas,profiling_categoricas,profiling_de_texto = genera_profiling_por_variable(df)
+    """
     # Dividimos variables por tipo de datos
     vars_type = df.dtypes
     vars_type = pd.DataFrame(vars_type, columns = ['tipo'])
@@ -393,12 +532,15 @@ def StringLowercase(df):
     Función cambiar todos los strings de un dataframe a lowercase
     (columnas y observaciones)
 
-    Args:
-        df: dataframe al que se desea hacer la modificación
-    Return:
-        df: dataframe modificado
+    ==========
+    * Args:
+         - df: dataframe al que se desea hacer la modificación.
+    * Return:
+         - df: dataframe modificado
+    ==========
+    Ejemplo:
+        >>df = StringLowercase(df)
     """
-
     ### Columnas
 
     DataFrameColumns = df.columns
@@ -422,12 +564,15 @@ def StringAcentos(df):
     Función para eliminar acentos, dieresis y eñes de los strings de un
     dataframe (columnas y observaciones)
 
-    Args:
-        df: dataframe al que se desea hacer la modificación
-    Return:
-        df: dataframe modificado
+    ==========
+    * Args:
+         - df: dataframe al que se desea hacer la modificación.
+    * Return:
+         - df: dataframe modificado
+    ==========
+    Ejemplo:
+        >>df = StringAcentos(df)
     """
-
     ### Columnas
 
     df.columns = df.columns.str.replace('á', 'a')
@@ -454,12 +599,15 @@ def StringStrip(df):
     Función para eliminar espacios al inicio y al final de los strings de un
     dataframe (columnas y observaciones)
 
-    Args:
-        df: dataframe al que se desea hacer la modificación
-    Return:
-        df: dataframe modificado
+    ==========
+    * Args:
+         - df: dataframe al que se desea hacer la modificación.
+    * Return:
+         - df: dataframe modificado
+    ==========
+    Ejemplo:
+        >>df = StringStrip(df)
     """
-
     ### Columnas
 
     df.columns = [col.strip() for col in df.columns]
@@ -480,12 +628,15 @@ def StringEspacios(df):
     Función para eliminar espacios dobles (o mas) de los strings de un
     dataframe (columnas y observaciones)
 
-    Args:
-        df: dataframe al que se desea hacer la modificación
-    Return:
-        df: dataframe modificado
+    ==========
+    * Args:
+         - df: dataframe al que se desea hacer la modificación.
+    * Return:
+         - df: dataframe modificado
+    ==========
+    Ejemplo:
+        >>df = StringEspacios(df)
     """
-
     ### Columnas
 
     df.columns = [re.sub(' +', ' ', col) for col in df.columns]
@@ -503,14 +654,18 @@ def StringEspacios(df):
 
 def EstandarizaFormato(df):
     """
-    Función para estandarizar un dataframe: minúsculas, sin espacios en blanco, sin signos de puntuación
+    Función para estandarizar un dataframe: minúsculas, sin espacios en blanco,
+    sin signos de puntuación (columnas y observaciones)
 
-    Args:
-        df: dataframe al que se desea hacer la modificación
-    Return:
-        df: dataframe modificado
+    ==========
+    * Args:
+         - df: dataframe al que se desea hacer la modificación.
+    * Return:
+         - df: dataframe modificado
+    ==========
+    Ejemplo:
+        >>df = EstandarizaFormato(df)
     """
-
     ### Quita espacios en columnas
     df.columns = df.columns.str.replace(' ', '_')
 
