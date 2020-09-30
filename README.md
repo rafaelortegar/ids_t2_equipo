@@ -41,3 +41,8 @@ Si usted desea reproducir los hallazgos encontrados en este trabajo, lo que tien
 6. Corre el comando `jupyter notebook` (asegúrate de tener activo tu environment).
 
 7. Abre el archivo `Laboratorio_limpio` y ya podrás operarlo sin problemas.
+
+## ¿Qué archivos son importantes en este repositorio?
+
+- En la ruta `notebooks/Laboratorio_limpio.ipynb` encontrarás el notebook que contiene los resultados encontrados en este trabajo.
+- En la ruta `src/algorithms/eda.py` encontrarás los scripts utilizados por el notebook.
