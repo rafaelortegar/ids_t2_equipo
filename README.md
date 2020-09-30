@@ -12,6 +12,12 @@ Num | Alumno                      | Clave única
 
 ## ¿Cómo reproducir los resultados de este repositorio?
 
+Es importante comentar que las especificaciones del sistema operativo donde se creó este trabajo son:
+
+- Nombre del SO: Ubuntu 20.04.1 LTS
+- Tipo de SO: 64 bits
+- Versión de Gnome: 3.36.3
+
 Si usted desea reproducir los hallazgos encontrados en este trabajo, lo que tiene que hacer es lo siguiente:
 
 1. clonar el repositorio en la dirección de su agrado dentro de su computadora con el comando: `git clone <url del repositorio> <nombre que desea poner al repositorio dentro de su sistema>`
