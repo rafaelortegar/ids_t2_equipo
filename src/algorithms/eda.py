@@ -708,3 +708,42 @@ def CreaTablaConteoPorcentaje(df, nomColumna, booleanNA):
     df_resultado['porcentaje'] = df[nomColumna].value_counts(dropna=booleanNA, normalize=True).mul(100).round(2).astype(str)+'%'
 
     return df_resultado
+
+def prepara_dataset(df):
+    """
+    Esta función hace las correcciones al dataset.
+
+    ==========
+    * Args:
+         - df: el data frame al que se le van a hacer las correcciones.
+    * Return:
+         - Data Frame: entrega el data frame corregido.
+    ==========
+    Ejemplo:
+        # Para encontrar el tipo de dato numérico
+         >>df = prepara_dataset(df)
+    """
+    # Corregir typo en talpan
+    df.loc[df["nomgeo"].str.contains('Talpan', case = False, na = None), "nomgeo"] = 'Tlalpan'
+
+    # Estandarizamos formato
+    df = EstandarizaFormato(df)
+
+    # cambiamos los tipos de variable
+    df = df.astype({"bimestre":'category', "indice_des":'category', "nomgeo":'category', "alcaldia":'category',"colonia":'category', "gid":'category'})
+
+    # cambiamos la columna geo_point
+    new = df['geo_point'].str.split(",", n = 1, expand = True)
+    df["latitud"]= new[0]
+    df["longitud"]= new[1]
+
+    # cambiamos el tipo para latitud y longitud
+    df = df.astype({"latitud":'float64', "longitud":'float64'})
+
+    # Eliminamos la columna geo_point
+    df.drop(columns =["geo_point"], inplace = True)
+
+    # Eliminamos la columna geo_shape
+    df.drop(columns =["geo_shape"], inplace = True)
+
+    return df
