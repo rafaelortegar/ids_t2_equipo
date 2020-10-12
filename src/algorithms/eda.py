@@ -741,7 +741,7 @@ def prepara_dataset(df):
     df = df.astype({"latitud":'float64', "longitud":'float64'})
 
     # Eliminamos la columna geo_point
-    df.drop(columns =["geo_point"], inplace = True)
+    #df.drop(columns =["geo_point"], inplace = True)
 
     # Eliminamos la columna geo_shape
     #df.drop(columns =["geo_shape"], inplace = True)
